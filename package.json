@@ -9,14 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@daily-co/daily-js": "^0.72.0",
+    "@daily-co/daily-react": "^0.20.0",
     "@excalidraw/excalidraw": "^0.17.6",
     "firebase": "^10.13.2",
     "next": "14.2.13",
     "react": "^18",
     "react-dom": "^18",
     "react-firebase-hooks": "^5.1.1",
-    "react-google-button": "^0.8.0",
-    "simple-peer": "^9.11.1"
+    "react-google-button": "^0.8.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
