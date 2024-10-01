@@ -65,6 +65,14 @@ const Login = () => {
             Sign In
           </button>
         </form>
+
+        <div className="relative my-6">
+          <hr className="border-gray-300" />
+          <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-gray-500">
+            or
+          </span>
+        </div>
+
         <div className="mt-6 flex justify-center">
           <GoogleButton
             onClick={signInWithGoogle}
