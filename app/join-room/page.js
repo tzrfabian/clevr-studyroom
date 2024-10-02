@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { database } from '../../lib/firebase';
 import { ref, get } from 'firebase/database';
+import Link from 'next/link';
 
 export default function JoinRoom() {
   const [roomId, setRoomId] = useState('');
@@ -65,6 +66,9 @@ export default function JoinRoom() {
             />
           </div>
           <button type="submit" className="btn btn-primary w-full">Join Room</button>
+          <Link href={'/dashboard'}>
+          <button type="button" className="btn btn-error text-white w-full my-3">Back</button>
+          </Link>
         </form>
       </div>
     </ProtectedRoute>
