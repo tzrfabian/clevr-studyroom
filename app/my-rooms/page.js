@@ -54,25 +54,42 @@ export default function MyRooms() {
 
   return (
     <ProtectedRoute>
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
-        <h1 className="text-4xl font-bold mb-8">My Study Rooms</h1>
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] bg-light-background dark:bg-dark-background transition-colors duration-500">
+        <h1 className="text-5xl font-extrabold mb-8 text-light-text dark:text-dark-text transition-colors duration-500">
+          My Study Rooms
+        </h1>
+  
         {rooms.length > 0 ? (
-          <ul className="w-full max-w-md">
+          <ul className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl">
             {rooms.map((room) => (
-              <li key={room.id} className="mb-4 p-4 border rounded">
-                <h2 className="text-xl font-semibold">{room.name}</h2>
-                <p>Created: {new Date(room.createdAt).toLocaleString()}</p>
-                <p>Room ID: {room.id}</p>
-                <div className="mt-2 flex justify-between">
-                  <button 
+              <li
+                key={room.id}
+                className="group relative p-6 bg-white dark:bg-gray-700 shadow-xl rounded-lg transition-colors duration-500 transform hover:scale-105 hover:shadow-2xl"
+              >
+                {/* Room Name */}
+                <h2 className="text-2xl font-bold text-black dark:text-white mb-2 transition-colors duration-500">
+                  {room.name}
+                </h2>
+                
+                {/* Room Details */}
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-1">
+                  Created: {new Date(room.createdAt).toLocaleString()}
+                </p>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  Room ID: {room.id}
+                </p>
+  
+                {/* Action Buttons */}
+                <div className="mt-4 flex justify-between space-x-4">
+                  <button
                     onClick={() => router.push(`/room/${room.id}`)}
-                    className="btn btn-primary"
+                    className="relative z-10 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white transition-colors duration-300 transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-500"
                   >
                     Enter Room
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleDeleteRoom(room.id)}
-                    className="btn btn-error"
+                    className="relative z-10 px-4 py-2 rounded-full bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white transition-colors duration-300 transform hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-500"
                   >
                     Delete Room
                   </button>
@@ -81,9 +98,17 @@ export default function MyRooms() {
             ))}
           </ul>
         ) : (
-          <p>You haven't created any rooms yet.</p>
+          <p className="text-xl text-gray-600 dark:text-gray-300">
+            You haven't created any rooms yet.
+          </p>
         )}
       </div>
     </ProtectedRoute>
   );
+  
+  
+  
+  
+
+  
 }
