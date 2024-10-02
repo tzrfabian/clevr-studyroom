@@ -5,6 +5,7 @@ import ProtectedRoute from '../../components/ProtectedRoute';
 import { database } from '../../lib/firebase';
 import { ref, push, set } from 'firebase/database';
 import { useAppContext } from '../../lib/AppContext';
+import Link from 'next/link';
 
 export default function CreateRoom() {
   const [roomName, setRoomName] = useState('');
@@ -65,6 +66,9 @@ export default function CreateRoom() {
             />
           </div>
           <button type="submit" className="btn btn-primary w-full">Create Room</button>
+          <Link href={'/dashboard'}>
+          <button type="button" className="btn btn-error text-white w-full my-3">Back</button>
+          </Link>
         </form>
         {createdRoomId && (
           <div className="mt-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
