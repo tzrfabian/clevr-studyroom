@@ -1,25 +1,13 @@
-'use client';
-import { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-
-// Dynamically import Excalidraw, so it's only loaded in client-side
-const Excalidraw = dynamic(() => import('@excalidraw/excalidraw'), { ssr: false });
+'use client'
+import React, { useState } from 'react';
+import { Excalidraw } from '@excalidraw/excalidraw';
 
 export default function ExcalidrawTest() {
   const [showWhiteboard, setShowWhiteboard] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const toggleWhiteboard = () => {
     setShowWhiteboard(!showWhiteboard);
   };
-
-  if (!isClient) {
-    return null;
-  }
 
   return (
     <div>
@@ -45,7 +33,7 @@ export default function ExcalidrawTest() {
 
       {showWhiteboard && (
         <div style={{ width: '100%', height: '500px', marginTop: '20px', border: '1px solid #ccc' }}>
-          {/* Excalidraw whiteboard component */}
+            {/* excalidraw whiteboard component */}
           <Excalidraw />
         </div>
       )}
