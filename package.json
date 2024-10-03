@@ -12,6 +12,7 @@
     "@daily-co/daily-js": "^0.72.0",
     "@daily-co/daily-react": "^0.20.0",
     "@excalidraw/excalidraw": "^0.17.6",
+    "classnames": "^2.5.1",
     "firebase": "^10.13.2",
     "next": "14.2.13",
     "react": "^18.3.1",
