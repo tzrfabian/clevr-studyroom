@@ -4,12 +4,15 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  updateProfile,
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import GoogleButton from "react-google-button";
 
 const Register = () => {
+  const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
+  const [photoUrl] = useState("https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -17,7 +20,13 @@ const Register = () => {
   const signUp = async (e) => {
     e.preventDefault();
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await updateProfile(user, {
+        displayName: displayName,
+        photoURL: photoUrl
+      })
       router.push("/dashboard");
     } catch (error) {
       setError(error.message);
@@ -42,6 +51,14 @@ const Register = () => {
         </h2>
         {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
         <form onSubmit={signUp} className="space-y-6">
+          <input
+            type="text"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="Your Name"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200 text-black"
+            required
+          />
           <input
             type="email"
             value={email}

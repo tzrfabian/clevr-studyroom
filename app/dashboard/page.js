@@ -5,6 +5,7 @@ import ProtectedRoute from "../../components/ProtectedRoute";
 
 export default function Dashboard() {
   const { user } = useAppContext();
+  // console.log(user?.photoURL);
 
   return (
     <ProtectedRoute>
@@ -13,8 +14,11 @@ export default function Dashboard() {
           <h1 className="text-4xl font-bold mb-4 transition-transform duration-500 ease-in-out hover:text-blue-500">
             Welcome to your Dashboard
           </h1>
-          <p className="text-xl mb-6 transition-opacity duration-700 ease-in-out hover:opacity-80">
-            Hello, {user?.email}!
+          <div className="flex flex-col items-center justify-center">
+            <img className="w-40 h-40 rounded-full" src={user?.photoURL} alt="pic"/>
+          </div>
+          <p className="text-xl my-6 transition-opacity duration-700 ease-in-out hover:opacity-80">
+            Hello, {user?.displayName}!
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Link
