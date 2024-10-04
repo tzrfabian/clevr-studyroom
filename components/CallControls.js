@@ -18,8 +18,8 @@ import {
     const handleToggleMic = () => {
       daily.setLocalAudio(micTrack.isOff);
     };
-    const handleLeave = () => {
-      daily.leave();
+    const handleLeave = async () => {
+      await daily.leave();
     };
   
     return (
