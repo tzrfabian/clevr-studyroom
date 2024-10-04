@@ -21,24 +21,17 @@ function Tile({ sessionId}) {
   console.log({ sessionId, username })
 
   return (
-    <div className="Tile w-full h-full"> 
+    <div className="Tile">
       {userVideo === 'off' ? (
-        
-        <div
-          className="flex flex-col items-center justify-center bg-black text-white"
-          style={{ width: "100%", height: "100%"}} // Full size black screen
-        >
-          <img className="w-40 h-40 rounded-full" src={user?.photoURL} alt="pic"/>
+        <div className="flex flex-col items-center justify-center bg-black text-white" style={{ width: "100%", height: "100%" }}>
+          <img className="w-40 h-40 rounded-full" src={user?.photoURL} alt="pic" />
           <span className="text-lg font-semibold my-3">{username || user?.displayName}</span>
         </div>
       ) : (
-        
         <DailyVideo
           key={sessionId}
           automirror
-          className={classNames({
-            active: activeId === sessionId
-          })}
+          className={classNames({ active: activeId === sessionId })}
           sessionId={sessionId}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
@@ -50,10 +43,20 @@ function Tile({ sessionId}) {
 export default function Call({ isVideoEnabled }) {
   const participantIds = useParticipantIds();
 
-  console.log(participantIds)
+  const numParticipants = participantIds.length;
+  const numCols = Math.ceil(Math.sqrt(numParticipants));
+  const numRows = Math.ceil(numParticipants / numCols);
 
   return (
-    <div className="Call w-screen h-screen">
+    <div
+      className="Call w-screen h-screen grid"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${numCols}, 1fr)`,
+        gridTemplateRows: `repeat(${numRows}, 1fr)`,
+        gap: '10px',
+      }}
+    >
       {participantIds.map((id) => (
         <Tile key={id} sessionId={id} isVideoEnabled={isVideoEnabled} />
       ))}
