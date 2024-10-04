@@ -1,122 +1,118 @@
 'use client';
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAppContext } from '../../../lib/AppContext';
 import ProtectedRoute from '../../../components/ProtectedRoute';
-import DailyIframe from '@daily-co/daily-js';
-import { DailyAudio, DailyProvider } from '@daily-co/daily-react';
-import Call from '@/components/Call';
-import PreJoin from '@/components/PreJoin';
+import { DailyProvider } from '@daily-co/daily-react';
+import { useDaily, useDailyEvent } from '@daily-co/daily-react';
+import Call from '../../../components/Call';
 
-export default function Room() {
-  const [username, setUsername] = useState("");
-  const [joined, setJoined] = useState(false);
+function CallWrapper({ onLeave }) {
+  const daily = useDaily();
+  const [joined, setJoined] = useState(false)
 
-  const roomUrl = `https://projectclevr.daily.co/roomName`;
-  const handleNameChange = (ev) => {
-    setUsername(ev.target.value.trim());
-  };
-  return(
-    <DailyProvider url={roomUrl} userName={username} dailyConfig={{ useDevicePreferenceCookies: true }}>
-      <div className="App">
-        {joined ? (
-          <Call onLeave={() => setJoined(false)} />
-        ) : (
-          <PreJoin
-            onJoin={() => setJoined(true)}
-            onUsernameChange={handleNameChange}
-            username={username}
-          />
-        )}
-      </div>
-      <DailyAudio />
-    </DailyProvider>
-  );
+  useDailyEvent('left-meeting', onLeave);
+  useDailyEvent('joining-meeting', () => {
+    setJoined(true)
+    console.log("kamu join")
+  })
+
+  useEffect(() => {
+    if (daily) {
+      console.log(daily)
+      daily.join();
+
+    }
+  }, [daily]);
+
+  if (!joined) return <p>Your're not join the call</p>
+
+  return <Call />;
 }
 
-// export default function Room() {
-//   const [dailyUrl, setDailyUrl] = useState(null);
-//   const [error, setError] = useState(null);
-//   const { user, loading } = useAppContext();
-//   const params = useParams();
-//   const router = useRouter();
-//   const roomId = params.id;
+export default function Room() {
+  const [dailyUrl, setDailyUrl] = useState(null);
+  const [error, setError] = useState(null);
+  const { user, loading } = useAppContext();
+  const params = useParams();
+  const router = useRouter();
+  const roomId = params.id;
 
-//   const createOrJoinRoom = useCallback(async () => {
-//     try {
-//       const response = await fetch('/api/daily/rooms', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ roomName: roomId })
-//       });
-//       const data = await response.json();
-//       if (data.error) {
-//         throw new Error(data.error);
-//       }
-//       setDailyUrl(data.url);
-//     } catch (error) {
-//       console.error('Error creating/joining Daily room:', error);
-//       setError(`Failed to create or join room: ${error.message}`);
-//     }
-//   }, [roomId]);
+  const createOrJoinRoom = useCallback(async () => {
+    try {
+      const response = await fetch('/api/daily/rooms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomName: roomId })
+      });
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      setDailyUrl(data.url);
+    } catch (error) {
+      console.error('Error creating/joining Daily room:', error);
+      setError(`Failed to create or join room: ${error.message}`);
+    }
+  }, [roomId]);
 
-//   useEffect(() => {
-//     if (loading) return;
-//     if (!user) {
-//       router.push('/login');
-//       return;
-//     }
+  useEffect(() => {
+    if (loading) return;
+    if (!user) {
+      router.push('/login');
+      return;
+    }
 
-//     createOrJoinRoom();
+    createOrJoinRoom();
 
-//     return () => {
-//     };
-//   }, [user, loading, router, createOrJoinRoom]);
+    return () => {
+    };
+  }, [user, loading, router, createOrJoinRoom]);
 
-//   useEffect(() => {
-//     if (dailyUrl) {
-//       const dailyScript = document.createElement('script');
-//       dailyScript.src = 'https://unpkg.com/@daily-co/daily-js';
-//       dailyScript.async = true;
-//       document.body.appendChild(dailyScript);
+  useEffect(() => {
+    if (dailyUrl) {
+      const dailyScript = document.createElement('script');
+      dailyScript.src = 'https://unpkg.com/@daily-co/daily-js';
+      dailyScript.async = true;
+      document.body.appendChild(dailyScript);
 
-//       dailyScript.onload = () => {
-//         const callFrame = DailyIframe.createFrame({
-//           iframeStyle: {
-//             position: 'fixed',
-//             top: '0',
-//             left: '0',
-//             width: '100%',
-//             height: '100%'
-//           },
-//           showLeaveButton: true,
-//           showFullscreenButton: true,
-//         });
+      dailyScript.onload = () => {
+        const callFrame = DailyIframe.createFrame({
+          iframeStyle: {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%'
+          },
+          showLeaveButton: true,
+          showFullscreenButton: true,
+        });
 
-//         callFrame.join({ url: dailyUrl });
-//       };
+        callFrame.join({ url: dailyUrl });
+      };
 
-//       return () => {
-//         document.body.removeChild(dailyScript);
-//       };
-//     }
-//   }, [dailyUrl]);
+      return () => {
+        document.body.removeChild(dailyScript);
+      };
+    }
+  }, [dailyUrl]);
 
-//   if (loading) {
-//     return <div>Loading...</div>;
-//   }
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
 //   if (error) {
 //     return <div className="text-red-500">Error: {error}</div>;
 //   }
 
-//   if (!dailyUrl) {
-//     return <div>Setting up room...</div>;
-//   }
+  if (!dailyUrl) {
+    return <div>Setting up room...</div>;
+  }
 
-//   return (
-//     <ProtectedRoute>
-//       <div id="daily-container" style={{ width: '100%', height: '100vh' }}></div>
-//     </ProtectedRoute>
-//   );
-// }
+  return (
+    <ProtectedRoute>
+      <div id="daily-container" style={{ width: '100%', height: '100vh' }}></div>
+    </ProtectedRoute>
+  );
+}
