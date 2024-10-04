@@ -25,11 +25,11 @@ function Tile({ sessionId}) {
       {userVideo === 'off' ? (
         
         <div
-          className="flex items-center justify-center bg-black text-white"
+          className="flex flex-col items-center justify-center bg-black text-white"
           style={{ width: "100%", height: "100%"}} // Full size black screen
         >
-        
-          <span className="text-lg font-semibold">{username || user?.displayName}</span>
+          <img className="w-40 h-40 rounded-full" src={user?.photoURL} alt="pic"/>
+          <span className="text-lg font-semibold my-3">{username || user?.displayName}</span>
         </div>
       ) : (
         

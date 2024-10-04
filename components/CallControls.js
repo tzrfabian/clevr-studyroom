@@ -19,6 +19,7 @@ import {
       daily.setLocalAudio(micTrack.isOff);
     };
     const handleLeave = async () => {
+      // using async await, because daily.leave is promise
       await daily.leave();
     };
   
