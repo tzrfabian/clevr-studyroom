@@ -26,6 +26,13 @@ function CallWrapper({ onLeave }) {
       console.log(daily);
       daily.join();
     }
+
+    return(() => {
+      if (daily) {
+        console.log(daily);
+        daily.leave();
+      }
+    })
   }, [daily]);
 
   // Toggle Audio
@@ -144,7 +151,7 @@ export default function Room() {
 
   return (
     <ProtectedRoute>
-      <DailyProvider url={roomData.url} userName={user.name}>
+      <DailyProvider url={roomData.url} userName={user.displayName}>
         <CallWrapper onLeave={handleLeave} />
       </DailyProvider>
     </ProtectedRoute>
