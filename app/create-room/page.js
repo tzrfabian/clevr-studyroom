@@ -22,14 +22,28 @@ export default function CreateRoom() {
     }
 
     try {
+      const response = await fetch('/api/daily/rooms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ roomName }),
+      });
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create room');
+      }
+
       const newRoomRef = push(ref(database, 'rooms'));
       await set(newRoomRef, {
         name: roomName,
         password: password,
+        dailyRoomUrl: data.url, 
         createdBy: user.uid,
-        createdAt: Date.now()
+        createdAt: Date.now(),
       });
+
       setCreatedRoomId(newRoomRef.key);
+
       // redirect 
       // router.push(`/room/${newRoomRef.key}`);
     } catch (error) {
@@ -37,6 +51,7 @@ export default function CreateRoom() {
       alert('Failed to create room. Please try again.');
     }
   };
+
 
   return (
     <ProtectedRoute>
