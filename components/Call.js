@@ -14,7 +14,7 @@ function Tile({ sessionId }) {
   const activeId = useActiveSpeakerId();
   const username = useParticipantProperty(sessionId, "user_name");
   const userVideo = useParticipantProperty(sessionId, "tracks.video.state");
-  // const audioTrack = useAudioTrack(sessionId);
+  const userPhoto = useParticipantProperty(sessionId, "userData.photo_url")
   console.log(username, userVideo, "<<<<<<<<<<<<<<<<<<<<<");
   return (
     <div className="Tile flex items-center justify-center">
@@ -24,7 +24,7 @@ function Tile({ sessionId }) {
         >
           <img
             className="w-40 h-40 rounded-full"
-            src={user?.photoURL}
+            src={userPhoto}
             alt="pic"
           />
           <span className="text-lg font-semibold my-3">

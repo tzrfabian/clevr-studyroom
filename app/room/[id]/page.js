@@ -130,7 +130,7 @@ export default function Room() {
 
   return (
     <ProtectedRoute>
-      <DailyProvider url={roomData.url} userName={user.displayName}>
+      <DailyProvider url={roomData.url} userName={user.displayName} userData={{photo_url: user.photoURL}}>
         <CallWrapper onLeave={handleLeave} />
       </DailyProvider>
     </ProtectedRoute>
