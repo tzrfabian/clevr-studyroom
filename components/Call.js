@@ -14,7 +14,8 @@ function Tile({ sessionId}) {
   const activeId = useActiveSpeakerId();
   const username = useParticipantProperty(sessionId, "user_name");
   const userVideo = useParticipantProperty(sessionId, 'tracks.video.state')
-
+  const userPhoto = useParticipantProperty(sessionId, "userData.photo_url")
+  console.log("🚀 ~ Tile ~ userPhoto:", userPhoto)
   console.log(userVideo, "<<< ", sessionId)
   const audioTrack = useAudioTrack(sessionId);
 
@@ -24,7 +25,7 @@ function Tile({ sessionId}) {
     <div className="Tile">
       {userVideo === 'off' ? (
         <div className="flex flex-col items-center justify-center bg-black text-white" style={{ width: "100%", height: "100%" }}>
-          <img className="w-40 h-40 rounded-full" src={user?.photoURL} alt="pic" />
+          <img className="w-40 h-40 rounded-full" src={userPhoto} alt="pic" />
           <span className="text-lg font-semibold my-3">{username || user?.displayName}</span>
         </div>
       ) : (
