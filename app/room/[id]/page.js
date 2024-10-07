@@ -16,26 +16,20 @@ function CallWrapper({ onLeave }) {
   const [isScreenSharing, setIsScreenSharing] = useState(false);
 
   useDailyEvent("left-meeting", onLeave);
-  useDailyEvent("joining-meeting", () => {
-    setJoined(true);
-    console.log("You joined the call");
-  });
+  useDailyEvent("joining-meeting", () => setJoined(true));
 
   useEffect(() => {
     if (daily) {
-      console.log(daily);
       daily.join();
     }
 
-    return(() => {
+    return () => {
       if (daily) {
-        console.log(daily);
         daily.leave();
       }
-    })
+    };
   }, [daily]);
 
-  // Toggle Audio
   const handleToggleAudio = useCallback(() => {
     if (daily) {
       daily.setLocalAudio(!isAudioEnabled);
@@ -43,7 +37,6 @@ function CallWrapper({ onLeave }) {
     }
   }, [daily, isAudioEnabled]);
 
-  // Toggle Video
   const handleToggleVideo = useCallback(() => {
     if (daily) {
       daily.setLocalVideo(!isVideoEnabled);
@@ -51,7 +44,6 @@ function CallWrapper({ onLeave }) {
     }
   }, [daily, isVideoEnabled]);
 
-  // Toggle Screen Share
   const handleScreenShareToggle = useCallback(() => {
     if (daily && !isScreenSharing) {
       daily.startScreenShare();
@@ -62,15 +54,14 @@ function CallWrapper({ onLeave }) {
     }
   }, [daily, isScreenSharing]);
 
-  if (!joined) return <p>Your're not join the call</p>;
+  if (!joined) return <p>Joining the call...</p>;
 
   return (
-    <div className="h-screen flex flex-col justify-between">
-      {" "}
-      <div className="flex-grow">
+    <div className="h-screen flex flex-col justify-between items-center bg-gray-900">
+      <div className="flex-grow w-full flex justify-center items-center">
         <Call isVideoEnabled={isVideoEnabled} />
       </div>
-      <div className="p-4 bg-gray-800">
+      <div className="p-4 bg-gray-800 w-full flex justify-center">
         <Controls
           onLeave={onLeave}
           onToggleAudio={handleToggleAudio}
@@ -106,15 +97,15 @@ export default function Room() {
           signal,
         });
         const data = await response.json();
-        if (data.error) {
-          throw new Error(data.error);
-        }
+        if (data.error) throw new Error(data.error);
+
         console.log("Room data received:", data);
         setRoomData(data);
       } catch (error) {
-        if (error.name === "AbortError") return;
-        console.error("Error creating/joining Daily room:", error);
-        setError(`Failed to create or join room: ${error.message}`);
+        if (error.name !== "AbortError") {
+          console.error("Error creating/joining Daily room:", error);
+          setError(`Failed to create or join room: ${error.message}`);
+        }
       }
     },
     [roomId]
@@ -122,32 +113,20 @@ export default function Room() {
 
   useEffect(() => {
     console.log("hooks triggered");
-
     const controller = new AbortController();
     const signal = controller.signal;
     createOrJoinRoom(signal);
 
-    return () => {
-      console.log("abort prev request");
-      controller.abort();
-    };
+    return () => controller.abort();
   }, [createOrJoinRoom]);
 
   const handleLeave = useCallback(() => {
     router.push("/dashboard");
   }, [router]);
 
-  if (loading) {
-    return <div>Loading user data...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-500">Error: {error}</div>;
-  }
-
-  if (!roomData) {
-    return <div>Setting up room...</div>;
-  }
+  if (loading) return <div>Loading user data...</div>;
+  if (error) return <div className="text-red-500">Error: {error}</div>;
+  if (!roomData) return <div>Setting up room...</div>;
 
   return (
     <ProtectedRoute>
