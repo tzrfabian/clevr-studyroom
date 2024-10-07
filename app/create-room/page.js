@@ -43,8 +43,7 @@ export default function CreateRoom() {
         createdAt: Date.now(),
       });
 
-      setCreatedRoomId(newRoomRef.key);
-      toast.success("Room Created!", { // belum bisa muncul
+      toast.success("Room Created!", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -55,12 +54,11 @@ export default function CreateRoom() {
         theme: "light",
         transition: Bounce,
       });
+      setCreatedRoomId(newRoomRef.key);
       // redirect 
       // router.push(`/room/${newRoomRef.key}`);
     } catch (error) {
-      console.error('Error creating room:', error);
-      alert('Failed to create room. Please try again.');
-      toast.error('Failed to create room. Please try again.', { // belum bisa muncul
+      toast.error('Failed to create room. Please try again.', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -71,6 +69,7 @@ export default function CreateRoom() {
         theme: "light",
         transition: Bounce,
       });
+      console.error('Error creating room:', error);
     }
   };
 
