@@ -6,6 +6,7 @@ import { database } from '../../lib/firebase';
 import { ref, push, set } from 'firebase/database';
 import { useAppContext } from '../../lib/AppContext';
 import Link from 'next/link';
+import { Bounce, toast } from 'react-toastify';
 
 export default function CreateRoom() {
   const [roomName, setRoomName] = useState('');
@@ -43,12 +44,33 @@ export default function CreateRoom() {
       });
 
       setCreatedRoomId(newRoomRef.key);
-
+      toast.success("Room Created!", { // belum bisa muncul
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
       // redirect 
       // router.push(`/room/${newRoomRef.key}`);
     } catch (error) {
       console.error('Error creating room:', error);
       alert('Failed to create room. Please try again.');
+      toast.error('Failed to create room. Please try again.', { // belum bisa muncul
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
   };
 
