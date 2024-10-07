@@ -8,6 +8,7 @@ import Call from "../../../components/Call";
 import Controls from "@/components/Controls";
 import Chat from "@/components/Chat";
 
+
 function CallWrapper({ onLeave }) {
   const daily = useDaily();
   const [joined, setJoined] = useState(false);
