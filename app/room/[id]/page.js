@@ -61,12 +61,12 @@ function CallWrapper({ onLeave, roomId }) {
   if (!joined) return <p>Joining the call...</p>;
 
   return (
-    <div className="h-screen flex flex-col justify-between items-center bg-gray-900">
+    <div className="h-screen flex flex-col justify-between items-center">
       <div className="flex-grow w-full flex justify-center items-center">
         <Call isVideoEnabled={isVideoEnabled} />
         {showChat && <Chat roomId={roomId} />}
       </div>
-      <div className="p-4 bg-gray-800 w-full flex justify-center">
+      <div className="p-4 w-full flex justify-center">
         <Controls
           onLeave={onLeave}
           onToggleAudio={handleToggleAudio}

@@ -19,17 +19,15 @@ function Tile({ sessionId }) {
   
   console.log(username, userVideo, "<<<<<<<<<<<<<<<<<<<<<");
   return (
-    <div className="Tile flex items-center justify-center">
+    <div className="Tile flex items-center justify-center w-full h-full p-4">
       {userVideo !== "playable" ? (
-        <div
-          className="flex flex-col items-center justify-center bg-black text-white w-80 h-40"
-        >
+        <div className="flex flex-col items-center justify-center bg-black text-white w-full h-full p-6 rounded-lg">
           <img
-            className="w-40 h-40 rounded-full"
+            className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover shadow-lg"
             src={userPhoto}
-            alt="pic"
+            alt="User Avatar"
           />
-          <span className="text-lg font-semibold my-3">
+          <span className="text-lg font-semibold mt-4">
             {username || user?.displayName}
           </span>
         </div>
@@ -39,11 +37,11 @@ function Tile({ sessionId }) {
           automirror
           className={classNames({ active: activeId === sessionId })}
           sessionId={sessionId}
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
         />
       )}
     </div>
-  );
+  );  
 }
 
 export default function Call({ isVideoEnabled }) {
