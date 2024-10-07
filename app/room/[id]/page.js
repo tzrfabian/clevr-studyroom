@@ -17,7 +17,6 @@ function CallWrapper({ onLeave }) {
   const { isSharingScreen, startScreenShare, stopScreenShare } = useScreenShare();
   const params = useParams();
   const roomId = params.id;
-  console.log(roomId, "INI ROOM ID");
 
   useDailyEvent("left-meeting", onLeave);
   useDailyEvent("joining-meeting", () => setJoined(true));

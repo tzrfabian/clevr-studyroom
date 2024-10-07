@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import GoogleButton from "react-google-button";
+import { Bounce, toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -19,7 +20,29 @@ const Login = () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/dashboard");
+      toast.success("Login Success!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     } catch (error) {
+      toast.error(error.message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
       setError(error.message);
     }
   };
@@ -29,7 +52,29 @@ const Login = () => {
     try {
       await signInWithPopup(auth, provider);
       router.push("/dashboard");
+      toast.success("Login Success!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     } catch (error) {
+      toast.error(error.message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
       setError(error.message);
     }
   };

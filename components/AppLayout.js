@@ -4,6 +4,7 @@ import ThemeToggle from "./ThemeToggle";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { auth } from "../lib/firebase";
+import { Bounce, toast } from "react-toastify";
 
 export default function AppLayout({ children }) {
   const { user, loading } = useAppContext();
@@ -16,6 +17,17 @@ export default function AppLayout({ children }) {
     try {
       await auth.signOut();
       router.push("/");
+      toast('See you next time!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     } catch (error) {
       console.error("Error signing out:", error);
     }

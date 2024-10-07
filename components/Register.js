@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import GoogleButton from "react-google-button";
+import { Bounce, toast } from "react-toastify";
 
 const Register = () => {
   const [displayName, setDisplayName] = useState("");
@@ -27,8 +28,30 @@ const Register = () => {
         displayName: displayName,
         photoURL: photoUrl
       })
-      router.push("/dashboard");
+      router.push("/login");
+      toast.success("Register Success!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     } catch (error) {
+      toast.error(error.message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
       setError(error.message);
     }
   };
