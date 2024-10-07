@@ -3,7 +3,7 @@ import { ref, push, onValue } from 'firebase/database';
 import { database } from '@/lib/firebase';
 import { useAppContext } from '@/lib/AppContext';
 
-export default function Chat({ roomId, sendMessage }) {
+export default function Chat({ roomId }) {
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState([]);
 

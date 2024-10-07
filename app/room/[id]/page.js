@@ -8,13 +8,16 @@ import Call from "../../../components/Call";
 import Controls from "@/components/Controls";
 import Chat from "@/components/Chat";
 
-function CallWrapper({ onLeave, roomId }) {
+function CallWrapper({ onLeave }) {
   const daily = useDaily();
   const [joined, setJoined] = useState(false);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [showChat, setShowChat] = useState(false);
   const { isSharingScreen, startScreenShare, stopScreenShare } = useScreenShare();
+  const params = useParams();
+  const roomId = params.id;
+  console.log(roomId, "INI ROOM ID");
 
   useDailyEvent("left-meeting", onLeave);
   useDailyEvent("joining-meeting", () => setJoined(true));
