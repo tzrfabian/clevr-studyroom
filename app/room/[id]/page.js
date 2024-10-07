@@ -3,17 +3,18 @@ import { useState, useCallback, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAppContext } from "../../../lib/AppContext";
 import ProtectedRoute from "../../../components/ProtectedRoute";
-import { DailyProvider } from "@daily-co/daily-react";
-import { useDaily, useDailyEvent } from "@daily-co/daily-react";
+import { DailyProvider, useDaily, useDailyEvent, useScreenShare } from "@daily-co/daily-react";
 import Call from "../../../components/Call";
 import Controls from "@/components/Controls";
+import Chat from "@/components/Chat";
 
-function CallWrapper({ onLeave }) {
+function CallWrapper({ onLeave, roomId }) {
   const daily = useDaily();
   const [joined, setJoined] = useState(false);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
-  const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const [showChat, setShowChat] = useState(false);
+  const { isSharingScreen, startScreenShare, stopScreenShare } = useScreenShare();
 
   useDailyEvent("left-meeting", onLeave);
   useDailyEvent("joining-meeting", () => setJoined(true));
@@ -30,6 +31,11 @@ function CallWrapper({ onLeave }) {
     };
   }, [daily]);
 
+  const handleChatToggle = useCallback(() => {
+    console.log("toggle chat showed");
+    setShowChat((prev) => !prev);
+  }, []);
+
   const handleToggleAudio = useCallback(() => {
     if (daily) {
       daily.setLocalAudio(!isAudioEnabled);
@@ -44,15 +50,13 @@ function CallWrapper({ onLeave }) {
     }
   }, [daily, isVideoEnabled]);
 
-  const handleScreenShareToggle = useCallback(() => {
-    if (daily && !isScreenSharing) {
-      daily.startScreenShare();
-      setIsScreenSharing(true);
-    } else if (daily && isScreenSharing) {
-      daily.stopScreenShare();
-      setIsScreenSharing(false);
+  const handleScreenShareToggle = useCallback(async () => {
+    if (isSharingScreen) {
+      await stopScreenShare();
+    } else {
+      await startScreenShare();
     }
-  }, [daily, isScreenSharing]);
+  }, [isSharingScreen, startScreenShare, stopScreenShare]);
 
   if (!joined) return <p>Joining the call...</p>;
 
@@ -60,15 +64,16 @@ function CallWrapper({ onLeave }) {
     <div className="h-screen flex flex-col justify-between items-center bg-gray-900">
       <div className="flex-grow w-full flex justify-center items-center">
         <Call isVideoEnabled={isVideoEnabled} />
+        {showChat && <Chat roomId={roomId} />}
       </div>
       <div className="p-4 bg-gray-800 w-full flex justify-center">
         <Controls
           onLeave={onLeave}
           onToggleAudio={handleToggleAudio}
           onToggleVideo={handleToggleVideo}
-          onChatToggle={() => console.log("Chat toggled")}
+          onChatToggle={handleChatToggle}
           onScreenShare={handleScreenShareToggle}
-          isScreenSharing={isScreenSharing}
+          isScreenSharing={isSharingScreen}
           isScreenShareAllowed={true}
           onWhiteboardToggle={() => console.log("Whiteboard toggled")}
           isHost={true}

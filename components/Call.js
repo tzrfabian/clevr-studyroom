@@ -2,12 +2,13 @@ import { useAppContext } from "@/lib/AppContext";
 import {
   DailyVideo,
   useActiveSpeakerId,
-  useAudioTrack,
   useParticipantProperty,
   useParticipantIds,
-  useLocalSessionId,
+  useScreenShare,
+  useDailyEvent,
 } from "@daily-co/daily-react";
 import classNames from "classnames";
+import { useState } from "react";
 
 function Tile({ sessionId }) {
   const { user } = useAppContext();
@@ -15,6 +16,7 @@ function Tile({ sessionId }) {
   const username = useParticipantProperty(sessionId, "user_name");
   const userVideo = useParticipantProperty(sessionId, "tracks.video.state");
   const userPhoto = useParticipantProperty(sessionId, "userData.photo_url")
+  
   console.log(username, userVideo, "<<<<<<<<<<<<<<<<<<<<<");
   return (
     <div className="Tile flex items-center justify-center">
@@ -46,12 +48,21 @@ function Tile({ sessionId }) {
 
 export default function Call({ isVideoEnabled }) {
   const participantIds = useParticipantIds();
+  const { screens } = useScreenShare();
 
   const numParticipants = participantIds.length;
-  const numCols = Math.min(2, numParticipants);
-  const numRows = Math.ceil(numParticipants / numCols);
+  const hasShareScreen = screens.length > 0
+  const numCols = hasShareScreen ? 1 :  Math.min(2, numParticipants + (screens.length > 0 ? 1 : 0));
+  const numRows = hasShareScreen ? numParticipants : Math.ceil((numParticipants + (screens.length > 0 ? 1 : 0)) / numCols);
+
 
   return (
+    <>
+    
+    {screens.map((screen) => (
+        <DailyVideo key={screen.screenId} sessionId={screen.session_id} type="screenVideo" />
+      ))}
+      
     <div
       className="Call flex justify-center items-center h-full"
       style={{
@@ -64,9 +75,11 @@ export default function Call({ isVideoEnabled }) {
         height: "100%",
       }}
     >
+
       {participantIds.map((id) => (
         <Tile key={id} sessionId={id} isVideoEnabled={isVideoEnabled} />
       ))}
     </div>
+    </>
   );
 }

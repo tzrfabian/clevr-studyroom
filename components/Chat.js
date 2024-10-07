@@ -1,12 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { ref, push, onValue } from 'firebase/database';
+import { database } from '@/lib/firebase';
+import { useAppContext } from '@/lib/AppContext';
 
-export default function Chat({ messages, sendMessage }) {
+export default function Chat({ roomId, sendMessage }) {
   const [newMessage, setNewMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+
+  const { user } = useAppContext();
+
+  const chatRef = ref(database, `rooms/${roomId}/messages`);
+
+  useEffect(() => {
+    const unsubscribe = onValue(chatRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const loadedMessages = Object.values(data);
+        setMessages(loadedMessages);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [chatRef]);
 
   const handleSend = (e) => {
     e.preventDefault();
     if (newMessage.trim()) {
-      sendMessage(newMessage);
+      const messageObj = {
+        sender: user?.displayName, // You can customize the sender based on logged-in user
+        content: newMessage,
+        timestamp: new Date().toISOString(),
+      };
+      push(chatRef, messageObj);
       setNewMessage('');
     }
   };
@@ -21,7 +46,7 @@ export default function Chat({ messages, sendMessage }) {
           </div>
         ))}
       </div>
-      <form onSubmit={handleSend} className="border-t border-gray-200 p-4">
+      <form onSubmit={handleSend} className="border-t border-gray-400 p-4">
         <input
           type="text"
           value={newMessage}
