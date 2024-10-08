@@ -37,7 +37,7 @@ export default function Chat({ roomId }) {
   };
 
   return (
-    <div className="w-64 bg-white border-l border-gray-200 flex flex-col shadow-lg rounded-lg overflow-hidden">
+    <div className="w-96 bg-white border-l border-gray-200 flex flex-col shadow-lg rounded-lg overflow-hidden">
       <div className="flex-grow overflow-y-auto p-4">
         {messages.map((msg, index) => (
           <div key={index} className={`mb-2 transition-transform transform ${msg.sender === "You" ? "text-right" : "text-left"}`}>

@@ -66,7 +66,7 @@ function CallWrapper({ onLeave }) {
 
   return (
     <div className="h-screen flex flex-col justify-between items-center">
-      <div className="flex-grow w-full flex justify-center items-center">
+      <div className="flex-grow w-full flex justify-center items-center gap-6">
         <Call isVideoEnabled={isVideoEnabled} />
         {showChat && <Chat roomId={roomId} />}
       </div>
