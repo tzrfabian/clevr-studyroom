@@ -3,11 +3,14 @@ import { useState, useCallback, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAppContext } from "../../../lib/AppContext";
 import ProtectedRoute from "../../../components/ProtectedRoute";
-import { DailyProvider, useDaily, useDailyEvent, useScreenShare, useLocalParticipant } from "@daily-co/daily-react";
+import { DailyAudio, DailyProvider, useDaily, useDailyEvent, useScreenShare, useLocalParticipant } from "@daily-co/daily-react";
 import Call from "../../../components/Call";
 import Controls from "@/components/Controls";
 import Chat from "@/components/Chat";
+import Loader from "@/components/Loader";
+import { toast } from "react-toastify";
 import Whiteboard from "@/components/Whiteboard";
+
 
 function CallWrapper({ onLeave }) {
   const daily = useDaily();
@@ -17,6 +20,7 @@ function CallWrapper({ onLeave }) {
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [showChat, setShowChat] = useState(false);
   const { isSharingScreen, startScreenShare, stopScreenShare } = useScreenShare();
+  const [hasShareScreen, setHasShareScreen] = useState(false);
   const [isWhiteboardActive, setIsWhiteboardActive] = useState(false);
   const [whiteboardOwnerId, setWhiteboardOwnerId] = useState(null);
   const params = useParams();
@@ -28,7 +32,10 @@ function CallWrapper({ onLeave }) {
 
   useEffect(() => {
     if (daily) {
-      daily.join();
+      daily.join().catch((err) => {
+        toast.error(err.errorMsg)
+        // console.log(err, "ERROR JOINING ROOM");
+      })
     }
 
     return () => {
@@ -37,6 +44,16 @@ function CallWrapper({ onLeave }) {
       }
     };
   }, [daily]);
+
+
+    useDailyEvent("participant-updated", (event) => {
+      if (event?.participant?.screen) {
+        setHasShareScreen(true);
+      } else {
+        setHasShareScreen(false);
+      }
+    });
+
 
   const handleChatToggle = useCallback(() => {
     console.log("toggle chat showed");
@@ -58,6 +75,17 @@ function CallWrapper({ onLeave }) {
   }, [daily, isVideoEnabled]);
 
   const handleScreenShareToggle = useCallback(async () => {
+    if (hasShareScreen && !isSharingScreen) {
+      alert("Screen sharing is currently in use by another participant.");
+      return;
+    }
+
+    if (isSharingScreen) {
+      await stopScreenShare();
+    } else {
+      await startScreenShare();
+    }
+
     if (isSharingScreen || isWhiteboardActive) {
       // await stopScreenShare();
       //setIsWhiteboardActive(false);
@@ -67,50 +95,37 @@ function CallWrapper({ onLeave }) {
     }
 
     await startScreenShare();
+  }, [isSharingScreen, isWhiteboardActive, startScreenShare, stopScreenShare, hasShareScreen, daily]);
 
-  }, [isSharingScreen, isWhiteboardActive, startScreenShare, stopScreenShare, daily]);
-  
   const handleWhiteboardToggle = useCallback(async () => {
-  setIsWhiteboardActive(true);
+    setIsWhiteboardActive(true);
+    
   
-
-  await startScreenShare({
-    displayMediaOptions: {
-      selfBrowserSurface : 'include'
-    }
-  });
-
-   return
-  if (!localParticipant) return;
-
-    if (isWhiteboardActive && whiteboardOwnerId === localParticipant.session_id) {
-      setIsWhiteboardActive(false);
-      setWhiteboardOwnerId(null);
-     // daily.sendAppMessage({ type: 'stop-whiteboard' }, '*');
-    } else if (!isWhiteboardActive && !isSharingScreen) {
-      setWhiteboardOwnerId(localParticipant.session_id);
-      // daily.sendAppMessage({ type: 'start-whiteboard', ownerId: localParticipant.session_id }, '*');
-    }
-  }, [isWhiteboardActive, isSharingScreen, daily, localParticipant, whiteboardOwnerId]);
-
-  /** 
-  useDailyEvent('app-message', (event) => {
-    if (event.data.type === 'start-whiteboard') {
-      setIsWhiteboardActive(true);
-      setWhiteboardOwnerId(event.data.ownerId);
-    } else if (event.data.type === 'stop-whiteboard') {
-      setIsWhiteboardActive(false);
-      setWhiteboardOwnerId(null);
-    }
-  });
-  */
+    await startScreenShare({
+      displayMediaOptions: {
+        selfBrowserSurface : 'include'
+      }
+    });
+  
+    //  return
+    if (!localParticipant) return;
+  
+      if (isWhiteboardActive && whiteboardOwnerId === localParticipant.session_id) {
+        setIsWhiteboardActive(false);
+        setWhiteboardOwnerId(null);
+       // daily.sendAppMessage({ type: 'stop-whiteboard' }, '*');
+      } else if (!isWhiteboardActive && !isSharingScreen) {
+        setWhiteboardOwnerId(localParticipant.session_id);
+        // daily.sendAppMessage({ type: 'start-whiteboard', ownerId: localParticipant.session_id }, '*');
+      }
+    }, [isWhiteboardActive, isSharingScreen, daily, localParticipant, whiteboardOwnerId]);
 
   if (!joined) return <p>Joining the call...</p>;
 
   return (
     <div className="h-screen flex flex-col justify-between items-center">
-      <div className="flex-grow w-full flex justify-center items-center">
-        {isWhiteboardActive ? (
+      <div className="flex-grow w-full flex justify-center items-center gap-6">
+      {isWhiteboardActive ? (
           <Whiteboard 
             isOwner={localParticipant && whiteboardOwnerId === localParticipant.session_id}
             daily={daily}
@@ -183,10 +198,11 @@ export default function Room() {
   }, [createOrJoinRoom]);
 
   const handleLeave = useCallback(() => {
+    // console.log(ev, " <<<< EVENT");
     router.push("/dashboard");
   }, [router]);
 
-  if (loading) return <div>Loading user data...</div>;
+  if (loading) return <div><Loader/></div>;
   if (error) return <div className="text-red-500">Error: {error}</div>;
   if (!roomData) return <div>Setting up room...</div>;
 
@@ -194,6 +210,7 @@ export default function Room() {
     <ProtectedRoute>
       <DailyProvider url={roomData.url} userName={user.displayName} userData={{photo_url: user.photoURL}}>
         <CallWrapper onLeave={handleLeave} />
+        <DailyAudio/>
       </DailyProvider>
     </ProtectedRoute>
   );

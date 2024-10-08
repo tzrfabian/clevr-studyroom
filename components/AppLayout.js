@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { auth } from "../lib/firebase";
 import { Bounce, toast } from "react-toastify";
+import Loader from "./Loader";
 
 export default function AppLayout({ children }) {
   const { user, loading } = useAppContext();
@@ -36,7 +37,7 @@ export default function AppLayout({ children }) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading...
+        <Loader/>
       </div>
     );
   }
@@ -49,7 +50,7 @@ export default function AppLayout({ children }) {
             href="/"
             className="text-3xl font-extrabold tracking-wide hover:text-blue-200 transition duration-300 ease-in-out"
           >
-            Clevr
+            <img src="https://cdn.discordapp.com/attachments/1289154509993414729/1293072043885199382/clevr_logo_1_3.png?ex=67060aaf&is=6704b92f&hm=35cef1432dcee21b203f8c6c243b86ac0e4acbe9cd98889358026909fb0065b1&" alt="logo img" width={150}/>
           </Link>
           <div className="flex items-center space-x-4">
             <ThemeToggle />
@@ -90,11 +91,6 @@ export default function AppLayout({ children }) {
       </header>
 
       <main className="flex-grow container mx-auto px-4 py-8">{children}</main>
-      <footer className="bg-neutral text-neutral-content">
-        <div className="container mx-auto px-4 py-2 text-center">
-          © 2024 Clevr. All rights reserved.
-        </div>
-      </footer>
     </div>
   );
 }

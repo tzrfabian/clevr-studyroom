@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaComments, FaDesktop, FaChalkboard, FaSignOutAlt, FaUserCog } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 export default function Controls({
   onLeave,
@@ -26,6 +27,15 @@ export default function Controls({
   const handleToggleVideo = () => {
     setIsVideoEnabled(!isVideoEnabled);
     onToggleVideo();
+  };
+
+  const handleScreenShare = () => {
+    if (isScreenSharing) {
+      // alert("Screen sharing is currently in use by another participant.");
+      toast.error("Screen sharing is currently in use by another participant.");
+    } else {
+      onScreenShare();
+    }
   };
 
   const buttonBaseClass = "p-3 rounded-full shadow-md focus:outline-none transition duration-300 ease-in-out transform hover:scale-105 focus:ring-2 focus:ring-offset-2";
@@ -57,10 +67,10 @@ export default function Controls({
         <FaComments size={iconSize} color="white" />
       </button>
 
-      {/* Share Screen */}
-      {isScreenShareAllowed && (
+     {/* Share Screen */}
+     {isScreenShareAllowed && (
         <button
-          onClick={onScreenShare}
+          onClick={handleScreenShare} 
           className={`${buttonBaseClass} ${isScreenSharing ? 'bg-green-500 hover:bg-green-600 focus:ring-green-400' : 'bg-gray-500 hover:bg-gray-600 focus:ring-gray-400'}`}
         >
           <FaDesktop size={iconSize} color="white" />
@@ -74,16 +84,6 @@ export default function Controls({
           className={`${buttonBaseClass} ${isWhiteboardActive ? 'bg-green-500 hover:bg-green-600 focus:ring-green-400' : 'bg-purple-500 hover:bg-purple-600 focus:ring-purple-400'}`}
         >
           <FaChalkboard size={iconSize} color="white" />
-        </button>
-      )}
-
-      {/* Host Controls */}
-      {isHost && (
-        <button
-          onClick={() => {}}
-          className={`${buttonBaseClass} bg-yellow-500 hover:bg-yellow-600 focus:ring-yellow-400`}
-        >
-          <FaUserCog size={iconSize} color="white" />
         </button>
       )}
 

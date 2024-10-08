@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { auth } from '../lib/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import Loader from './Loader';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -29,7 +30,7 @@ const Auth = () => {
   const signOut = () => auth.signOut();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div><Loader/></div>;
   }
 
   if (user) {

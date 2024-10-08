@@ -10,24 +10,28 @@ import {
 import classNames from "classnames";
 import { useState } from "react";
 
-function Tile({ sessionId }) {
+function Tile({ sessionId, hasShareScreen }) {
   const { user } = useAppContext();
   const activeId = useActiveSpeakerId();
   const username = useParticipantProperty(sessionId, "user_name");
   const userVideo = useParticipantProperty(sessionId, "tracks.video.state");
-  const userPhoto = useParticipantProperty(sessionId, "userData.photo_url")
-  
+  const userPhoto = useParticipantProperty(sessionId, "userData.photo_url");
+
   console.log(username, userVideo, "<<<<<<<<<<<<<<<<<<<<<");
   return (
-    <div className="Tile flex items-center justify-center w-full h-full p-4">
+    <div className="Tile p-2">
       {userVideo !== "playable" ? (
-        <div className="flex flex-col items-center justify-center bg-black text-white w-full h-full p-6 rounded-lg">
+        <div
+          className={`flex flex-col items-center justify-center bg-black text-white w-full ${
+            hasShareScreen ? "" : "h-full"
+          } p-2 rounded-lg`}
+        >
           <img
-            className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover shadow-lg"
+            className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover shadow-lg"
             src={userPhoto}
             alt="User Avatar"
           />
-          <span className="text-lg font-semibold mt-4">
+          <span className="text-sm md:text-md font-semibold mt-2">
             {username || user?.displayName}
           </span>
         </div>
@@ -35,49 +39,70 @@ function Tile({ sessionId }) {
         <DailyVideo
           key={sessionId}
           automirror
-          className={classNames({ active: activeId === sessionId })}
+          className={classNames({
+            active: activeId === sessionId,
+            "h-full": !hasShareScreen,
+          })}
           sessionId={sessionId}
-          style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
+          style={{
+            width: "100%",
+            objectFit: "cover",
+            borderRadius: "8px",
+          }}
         />
       )}
     </div>
-  );  
+  );
 }
 
 export default function Call({ isVideoEnabled }) {
   const participantIds = useParticipantIds();
-  const { screens } = useScreenShare();
+  const { screens, startScreenShare } = useScreenShare();
 
-  const numParticipants = participantIds.length;
-  const hasShareScreen = screens.length > 0
-  const numCols = hasShareScreen ? 1 :  Math.min(2, numParticipants + (screens.length > 0 ? 1 : 0));
-  const numRows = hasShareScreen ? numParticipants : Math.ceil((numParticipants + (screens.length > 0 ? 1 : 0)) / numCols);
+  
+  const hasShareScreen = screens.length > 0;
+ 
+  const numCols = hasShareScreen ? 1 : Math.min(2, participantIds.length);
 
 
   return (
     <>
-    
-    {screens.map((screen) => (
-        <DailyVideo key={screen.screenId} sessionId={screen.session_id} type="screenVideo" />
+      {screens.map((screen) => (
+        <div
+          key={screen.screenId}
+          className="ScreenShare"
+          style={{
+            width: hasShareScreen ? "80%" : "100%",
+            height: "100%",
+          }}
+        >
+          <DailyVideo sessionId={screen.session_id} type="screenVideo" />
+        </div>
       ))}
-      
-    <div
-      className="Call flex justify-center items-center h-full"
-      style={{
-        display: "grid",
-        gridTemplateColumns: `repeat(${numCols}, 1fr)`,
-        gridTemplateRows: `repeat(${numRows}, 1fr)`,
-        gap: "10px",
-        padding: "20px",
-        width: "100%",
-        height: "100%",
-      }}
-    >
 
-      {participantIds.map((id) => (
-        <Tile key={id} sessionId={id} isVideoEnabled={isVideoEnabled} />
-      ))}
-    </div>
+      <div
+        className="CallTiles"
+        style={{
+          display: hasShareScreen ? "flex" : "grid",
+          flexDirection: hasShareScreen ? "column" : "unset",
+          gridTemplateColumns: !hasShareScreen
+            ? `repeat(${numCols}, 1fr)`
+            : "unset",
+          gap: "10px",
+          width: hasShareScreen ? "20%" : "100%", 
+          height: "100%",
+          overflowY: "auto", 
+        }}
+      >
+        {participantIds.map((id) => (
+          <Tile
+            key={id}
+            sessionId={id}
+            hasShareScreen={hasShareScreen}
+            isVideoEnabled={isVideoEnabled}
+          />
+        ))}
+      </div>
     </>
   );
 }
