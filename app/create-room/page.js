@@ -7,16 +7,19 @@ import { ref, push, set } from 'firebase/database';
 import { useAppContext } from '../../lib/AppContext';
 import Link from 'next/link';
 import { Bounce, toast } from 'react-toastify';
+import Loader from '@/components/Loader';
 
 export default function CreateRoom() {
   const [roomName, setRoomName] = useState('');
   const [password, setPassword] = useState('');
   const [createdRoomId, setCreatedRoomId] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { user } = useAppContext();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (!roomName || !password) {
       alert('Please fill in all fields');
       return;
@@ -42,7 +45,7 @@ export default function CreateRoom() {
         createdBy: user.uid,
         createdAt: Date.now(),
       });
-
+      setLoading(false);
       toast.success("Room Created!", {
         position: "top-right",
         autoClose: 5000,
@@ -73,6 +76,9 @@ export default function CreateRoom() {
     }
   };
 
+  if(loading) {
+    return <Loader/>
+  }
 
   return (
     <ProtectedRoute>

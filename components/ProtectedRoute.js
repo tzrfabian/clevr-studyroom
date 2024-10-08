@@ -2,6 +2,7 @@
 import { useAppContext } from '../lib/AppContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import Loader from './Loader';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAppContext();
@@ -14,7 +15,7 @@ const ProtectedRoute = ({ children }) => {
   }, [user, loading, router]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div><Loader/></div>;
   }
 
   if (!user) {
