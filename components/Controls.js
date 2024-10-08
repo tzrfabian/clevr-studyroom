@@ -72,16 +72,6 @@ export default function Controls({
         <FaChalkboard size={iconSize} color="white" />
       </button>
 
-      {/* Host Controls */}
-      {isHost && (
-        <button
-          onClick={() => {}}
-          className={`${buttonBaseClass} bg-yellow-500 hover:bg-yellow-600 focus:ring-yellow-400`}
-        >
-          <FaUserCog size={iconSize} color="white" />
-        </button>
-      )}
-
       {/* Leave Call */}
       <button
         onClick={onLeave}

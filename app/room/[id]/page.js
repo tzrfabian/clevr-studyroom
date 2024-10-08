@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAppContext } from "../../../lib/AppContext";
 import ProtectedRoute from "../../../components/ProtectedRoute";
-import { DailyProvider, useDaily, useDailyEvent, useScreenShare } from "@daily-co/daily-react";
+import { DailyAudio, DailyProvider, useDaily, useDailyEvent, useScreenShare } from "@daily-co/daily-react";
 import Call from "../../../components/Call";
 import Controls from "@/components/Controls";
 import Chat from "@/components/Chat";
@@ -141,6 +141,7 @@ export default function Room() {
     <ProtectedRoute>
       <DailyProvider url={roomData.url} userName={user.displayName} userData={{photo_url: user.photoURL}}>
         <CallWrapper onLeave={handleLeave} />
+        <DailyAudio/>
       </DailyProvider>
     </ProtectedRoute>
   );
