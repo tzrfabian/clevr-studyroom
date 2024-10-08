@@ -62,28 +62,32 @@ export default function Chat({ roomId }) {
       <div
         ref={chatContainerRef}
         className="flex-grow p-4 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
-        style={{ maxHeight: "500px" }}
+        style={{ height: "510px" }} // Set height to 500px
         onScroll={handleScroll} // Attach the scroll event
       >
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`transition-transform transform ${
-              msg.sender === user?.displayName ? "text-right" : "text-left"
-            }`}
-          >
+        {messages.length === 0 ? ( // Show a placeholder if no messages
+          <div className="text-gray-400 text-center">No messages yet.</div>
+        ) : (
+          messages.map((msg, index) => (
             <div
-              className={`inline-block px-4 py-2 rounded-lg shadow-md transition-all duration-300 transform ${
-                msg.sender === user?.displayName
-                  ? "bg-green-500 text-white animate-slide-right"
-                  : "bg-gray-200 text-gray-800 animate-slide-left"
+              key={index}
+              className={`transition-transform transform ${
+                msg.sender === user?.displayName ? "text-right" : "text-left"
               }`}
             >
-              <strong className="font-semibold">{msg.sender}: </strong>
-              <span>{msg.content}</span>
+              <div
+                className={`inline-block px-4 py-2 rounded-lg shadow-md transition-all duration-300 transform ${
+                  msg.sender === user?.displayName
+                    ? "bg-green-500 text-white animate-slide-right"
+                    : "bg-gray-200 text-gray-800 animate-slide-left"
+                }`}
+              >
+                <strong className="font-semibold">{msg.sender}: </strong>
+                <span>{msg.content}</span>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       <form
