@@ -25,6 +25,14 @@ export default function Controls({
     onToggleVideo();
   };
 
+  const handleScreenShare = () => {
+    if (isScreenSharing) {
+      alert("Screen sharing is currently in use by another participant."); 
+    } else {
+      onScreenShare();
+    }
+  };
+
   const buttonBaseClass = "p-3 rounded-full shadow-md focus:outline-none transition duration-300 ease-in-out transform hover:scale-105 focus:ring-2 focus:ring-offset-2";
   const iconSize = 24;
 
@@ -54,10 +62,10 @@ export default function Controls({
         <FaComments size={iconSize} color="white" />
       </button>
 
-      {/* Share Screen */}
-      {isScreenShareAllowed && (
+     {/* Share Screen */}
+     {isScreenShareAllowed && (
         <button
-          onClick={onScreenShare}
+          onClick={handleScreenShare} 
           className={`${buttonBaseClass} ${isScreenSharing ? 'bg-green-500 hover:bg-green-600 focus:ring-green-400' : 'bg-gray-500 hover:bg-gray-600 focus:ring-gray-400'}`}
         >
           <FaDesktop size={iconSize} color="white" />

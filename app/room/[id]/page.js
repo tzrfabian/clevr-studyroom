@@ -17,6 +17,7 @@ function CallWrapper({ onLeave }) {
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [showChat, setShowChat] = useState(false);
   const { isSharingScreen, startScreenShare, stopScreenShare } = useScreenShare();
+  const [hasShareScreen, setHasShareScreen] = useState(false);
   const params = useParams();
   const roomId = params.id;
   // console.log(roomId, "INI ROOM ID");
@@ -35,6 +36,16 @@ function CallWrapper({ onLeave }) {
       }
     };
   }, [daily]);
+
+
+    useDailyEvent("participant-updated", (event) => {
+      if (event?.participant?.screen) {
+        setHasShareScreen(true);
+      } else {
+        setHasShareScreen(false);
+      }
+    });
+
 
   const handleChatToggle = useCallback(() => {
     console.log("toggle chat showed");
@@ -56,12 +67,17 @@ function CallWrapper({ onLeave }) {
   }, [daily, isVideoEnabled]);
 
   const handleScreenShareToggle = useCallback(async () => {
+    if (hasShareScreen && !isSharingScreen) {
+      alert("Screen sharing is currently in use by another participant.");
+      return;
+    }
+
     if (isSharingScreen) {
       await stopScreenShare();
     } else {
       await startScreenShare();
     }
-  }, [isSharingScreen, startScreenShare, stopScreenShare]);
+  }, [isSharingScreen, startScreenShare, stopScreenShare, hasShareScreen]);
 
   if (!joined) return <p>Joining the call...</p>;
 
