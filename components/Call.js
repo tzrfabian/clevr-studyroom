@@ -10,7 +10,7 @@ import {
 import classNames from "classnames";
 import { useState } from "react";
 
-function Tile({ sessionId, hasShareScreen }) {
+function Tile({ sessionId, hasShareScreen, isSingleParticipant }) {
   const { user } = useAppContext();
   const activeId = useActiveSpeakerId();
   const username = useParticipantProperty(sessionId, "user_name");
@@ -23,7 +23,7 @@ function Tile({ sessionId, hasShareScreen }) {
       {userVideo !== "playable" ? (
         <div
           className={`flex flex-col items-center justify-center bg-black text-white w-full ${
-            hasShareScreen ? "" : "h-full"
+            hasShareScreen ? "" : isSingleParticipant ? "h-full" : "h-80"
           } p-2 rounded-lg`}
         >
           <img
@@ -41,7 +41,8 @@ function Tile({ sessionId, hasShareScreen }) {
           automirror
           className={classNames({
             active: activeId === sessionId,
-            "h-full": !hasShareScreen,
+            "h-80": !hasShareScreen && !isSingleParticipant,
+            "h-full": isSingleParticipant,
           })}
           sessionId={sessionId}
           style={{
@@ -59,11 +60,11 @@ export default function Call({ isVideoEnabled }) {
   const participantIds = useParticipantIds();
   const { screens, startScreenShare } = useScreenShare();
 
-  
   const hasShareScreen = screens.length > 0;
- 
+
   const numCols = hasShareScreen ? 1 : Math.min(2, participantIds.length);
 
+  const isSingleParticipant = participantIds.length === 1;
 
   return (
     <>
@@ -89,9 +90,9 @@ export default function Call({ isVideoEnabled }) {
             ? `repeat(${numCols}, 1fr)`
             : "unset",
           gap: "10px",
-          width: hasShareScreen ? "20%" : "100%", 
+          width: hasShareScreen ? "20%" : "100%",
           height: "100%",
-          overflowY: "auto", 
+          overflowY: "auto",
         }}
       >
         {participantIds.map((id) => (
@@ -99,6 +100,7 @@ export default function Call({ isVideoEnabled }) {
             key={id}
             sessionId={id}
             hasShareScreen={hasShareScreen}
+            isSingleParticipant={isSingleParticipant}
             isVideoEnabled={isVideoEnabled}
           />
         ))}
