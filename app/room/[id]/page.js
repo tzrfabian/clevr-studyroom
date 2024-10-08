@@ -150,7 +150,7 @@ export default function Room() {
     return () => controller.abort();
   }, [createOrJoinRoom]);
 
-  const handleLeave = useCallback((ev) => {
+  const handleLeave = useCallback(() => {
     // console.log(ev, " <<<< EVENT");
     router.push("/dashboard");
   }, [router]);

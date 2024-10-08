@@ -23,7 +23,7 @@ function Tile({ sessionId, hasShareScreen }) {
       {userVideo !== "playable" ? (
         <div
           className={`flex flex-col items-center justify-center bg-black text-white w-full ${
-            hasShareScreen ? "" : "h-80"
+            hasShareScreen ? "" : "h-full"
           } p-2 rounded-lg`}
         >
           <img
@@ -41,7 +41,7 @@ function Tile({ sessionId, hasShareScreen }) {
           automirror
           className={classNames({
             active: activeId === sessionId,
-            "h-80": !hasShareScreen,
+            "h-full": !hasShareScreen,
           })}
           sessionId={sessionId}
           style={{
