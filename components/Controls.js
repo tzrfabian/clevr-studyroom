@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaComments, FaDesktop, FaChalkboard, FaSignOutAlt, FaUserCog } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 export default function Controls({
   onLeave,
@@ -27,7 +28,8 @@ export default function Controls({
 
   const handleScreenShare = () => {
     if (isScreenSharing) {
-      alert("Screen sharing is currently in use by another participant."); 
+      // alert("Screen sharing is currently in use by another participant.");
+      toast.error("Screen sharing is currently in use by another participant.");
     } else {
       onScreenShare();
     }
