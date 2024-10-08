@@ -7,6 +7,7 @@ import { DailyAudio, DailyProvider, useDaily, useDailyEvent, useScreenShare } fr
 import Call from "../../../components/Call";
 import Controls from "@/components/Controls";
 import Chat from "@/components/Chat";
+import Loader from "@/components/Loader";
 
 
 function CallWrapper({ onLeave }) {
@@ -133,7 +134,7 @@ export default function Room() {
     router.push("/dashboard");
   }, [router]);
 
-  if (loading) return <div>Loading user data...</div>;
+  if (loading) return <div><Loader/></div>;
   if (error) return <div className="text-red-500">Error: {error}</div>;
   if (!roomData) return <div>Setting up room...</div>;
 

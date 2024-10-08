@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { auth } from "../lib/firebase";
 import { Bounce, toast } from "react-toastify";
+import Loader from "./Loader";
 
 export default function AppLayout({ children }) {
   const { user, loading } = useAppContext();
@@ -36,7 +37,7 @@ export default function AppLayout({ children }) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading...
+        <Loader/>
       </div>
     );
   }

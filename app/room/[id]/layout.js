@@ -7,7 +7,7 @@ export default function RoomLayout({ children }){
     const {user, loading} = useAppContext()
     const router  = useRouter()
 
-    if (loading) return <p>Loading...</p>
+    if (loading) return <Loader/>
 
 
     if(!user) {

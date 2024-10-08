@@ -5,14 +5,17 @@ import ProtectedRoute from '../../components/ProtectedRoute';
 import { database } from '../../lib/firebase';
 import { ref, get } from 'firebase/database';
 import Link from 'next/link';
+import Loader from '@/components/Loader';
 
 export default function JoinRoom() {
   const [roomId, setRoomId] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (!roomId || !password) {
       alert('Please fill in all fields');
       return;
@@ -32,11 +35,16 @@ export default function JoinRoom() {
       } else {
         alert('Room not found');
       }
+      setLoading(false)
     } catch (error) {
       console.error('Error joining room:', error);
       alert('Failed to join room. Please try again.');
     }
   };
+
+  if(loading) {
+    return <Loader/>
+  }
 
   return (
     <ProtectedRoute>

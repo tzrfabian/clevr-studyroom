@@ -1,11 +1,12 @@
 "use client";
+import Loader from "@/components/Loader";
 import { useAppContext } from "../lib/AppContext";
 
 export default function Home() {
   const { user, loading } = useAppContext();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loader/>
   }
 
   return (
