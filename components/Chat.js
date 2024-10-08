@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { ref, push, onValue } from 'firebase/database';
-import { database } from '@/lib/firebase';
-import { useAppContext } from '@/lib/AppContext';
+import React, { useState, useEffect, useRef } from "react";
+import { ref, push, onValue } from "firebase/database";
+import { database } from "@/lib/firebase";
+import { useAppContext } from "@/lib/AppContext";
 
 export default function Chat({ roomId }) {
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([]);
 
   const { user } = useAppContext();
 
   const chatRef = ref(database, `rooms/${roomId}/messages`);
+  const chatContainerRef = useRef(null);
 
   useEffect(() => {
     const unsubscribe = onValue(chatRef, (snapshot) => {
@@ -23,32 +24,58 @@ export default function Chat({ roomId }) {
     return () => unsubscribe();
   }, [chatRef]);
 
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const handleSend = (e) => {
     e.preventDefault();
     if (newMessage.trim()) {
       const messageObj = {
-        sender: user?.displayName, // You can customize the sender based on logged-in user
+        sender: user?.displayName,
         content: newMessage,
         timestamp: new Date().toISOString(),
       };
       push(chatRef, messageObj);
-      setNewMessage('');
+      setNewMessage("");
     }
   };
 
   return (
-    <div className="w-96 bg-white border-l border-gray-200 flex flex-col shadow-lg rounded-lg overflow-hidden">
-      <div className="flex-grow overflow-y-auto p-4">
+    <div className="w-96 bg-gray-50 border-l border-gray-200 flex flex-col shadow-xl rounded-lg overflow-hidden">
+      <div
+        ref={chatContainerRef}
+        className="flex-grow p-4 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+        style={{ maxHeight: "500px" }}
+      >
         {messages.map((msg, index) => (
-          <div key={index} className={`mb-2 transition-transform transform ${msg.sender === "You" ? "text-right" : "text-left"}`}>
-            <div className={`inline-block px-3 py-2 rounded-lg ${msg.sender === "You" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}>
+          <div
+            key={index}
+            className={`transition-transform transform ${
+              msg.sender === user?.displayName ? "text-right" : "text-left"
+            }`}
+          >
+            <div
+              className={`inline-block px-4 py-2 rounded-lg shadow-md transition-all duration-300 transform ${
+                msg.sender === user?.displayName
+                  ? "bg-green-500 text-white animate-slide-right"
+                  : "bg-gray-200 text-gray-800 animate-slide-left"
+              }`}
+            >
               <strong className="font-semibold">{msg.sender}: </strong>
               <span>{msg.content}</span>
             </div>
           </div>
         ))}
       </div>
-      <form onSubmit={handleSend} className="border-t border-gray-400 p-4 bg-gray-100 transition-colors duration-300 hover:bg-gray-200">
+
+      <form
+        onSubmit={handleSend}
+        className="border-t border-gray-300 p-4 bg-gray-100 transition-colors duration-300 hover:bg-gray-200 flex space-x-2"
+      >
         <input
           type="text"
           value={newMessage}
@@ -56,11 +83,13 @@ export default function Chat({ roomId }) {
           placeholder="Type a message..."
           className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 text-black"
         />
-        <button type="submit" className="mt-2 w-full py-2 bg-blue-500 text-white rounded-lg transition-transform duration-300 transform hover:scale-105">
+        <button
+          type="submit"
+          className="py-2 px-4 bg-blue-500 text-white rounded-lg transition-transform duration-300 transform hover:scale-105"
+        >
           Send
         </button>
       </form>
     </div>
   );
-  
 }
