@@ -11,6 +11,7 @@ export default function Chat({ roomId }) {
 
   const chatRef = ref(database, `rooms/${roomId}/messages`);
   const chatContainerRef = useRef(null);
+  const isAtBottomRef = useRef(true);
 
   useEffect(() => {
     const unsubscribe = onValue(chatRef, (snapshot) => {
@@ -25,11 +26,23 @@ export default function Chat({ roomId }) {
   }, [chatRef]);
 
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
+    const chatContainer = chatContainerRef.current;
+    if (chatContainer) {
+      if (isAtBottomRef.current) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
     }
   }, [messages]);
+
+  // Event listener for scrolling to check if user is at the bottom
+  const handleScroll = () => {
+    const chatContainer = chatContainerRef.current;
+    if (chatContainer) {
+      isAtBottomRef.current =
+        chatContainer.scrollHeight - chatContainer.scrollTop <=
+        chatContainer.clientHeight + 10; // Tolerance of 10 pixels
+    }
+  };
 
   const handleSend = (e) => {
     e.preventDefault();
@@ -50,6 +63,7 @@ export default function Chat({ roomId }) {
         ref={chatContainerRef}
         className="flex-grow p-4 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
         style={{ maxHeight: "500px" }}
+        onScroll={handleScroll} // Attach the scroll event
       >
         {messages.map((msg, index) => (
           <div
