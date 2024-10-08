@@ -10,18 +10,22 @@ import {
 import classNames from "classnames";
 import { useState } from "react";
 
-function Tile({ sessionId }) {
+function Tile({ sessionId, hasShareScreen }) {
   const { user } = useAppContext();
   const activeId = useActiveSpeakerId();
   const username = useParticipantProperty(sessionId, "user_name");
   const userVideo = useParticipantProperty(sessionId, "tracks.video.state");
-  const userPhoto = useParticipantProperty(sessionId, "userData.photo_url")
-  
+  const userPhoto = useParticipantProperty(sessionId, "userData.photo_url");
+
   console.log(username, userVideo, "<<<<<<<<<<<<<<<<<<<<<");
   return (
     <div className="Tile p-2">
       {userVideo !== "playable" ? (
-        <div className="flex flex-col items-center justify-center bg-black text-white w-full h-full p-2 rounded-lg">
+        <div
+          className={`flex flex-col items-center justify-center bg-black text-white w-full ${
+            hasShareScreen ? "" : "h-80"
+          } p-2 rounded-lg`}
+        >
           <img
             className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover shadow-lg"
             src={userPhoto}
@@ -35,13 +39,15 @@ function Tile({ sessionId }) {
         <DailyVideo
           key={sessionId}
           automirror
-          className={classNames({ active: activeId === sessionId })}
+          className={classNames({
+            active: activeId === sessionId,
+            "h-80": !hasShareScreen,
+          })}
           sessionId={sessionId}
           style={{
             width: "100%",
-            height: "100%",
             objectFit: "cover",
-            borderRadius: "8px"
+            borderRadius: "8px",
           }}
         />
       )}
@@ -54,43 +60,49 @@ export default function Call({ isVideoEnabled }) {
   const { screens } = useScreenShare();
 
   // const numParticipants = participantIds.length;
-  const hasShareScreen = screens.length > 0
+  const hasShareScreen = screens.length > 0;
   // Jumlah kolom/ukuran tile saat tidak ada share screen
   const numCols = hasShareScreen ? 1 : Math.min(2, participantIds.length);
 
-
-    // Jika ada share screen, ubah layout tile menjadi kotak kecil di sisi kanan
-    return (
-      <>
-        {screens.map((screen) => (
-          <div
-            key={screen.screenId}
-            className="ScreenShare"
-            style={{
-              width: hasShareScreen ? "80%" : "100%", // Fokus lebih besar pada screen share
-              height: "100%",
-            }}
-          >
-            <DailyVideo sessionId={screen.session_id} type="screenVideo" />
-          </div>
-        ))}
-  
+  // Jika ada share screen, ubah layout tile menjadi kotak kecil di sisi kanan
+  return (
+    <>
+      {screens.map((screen) => (
         <div
-          className="CallTiles"
+          key={screen.screenId}
+          className="ScreenShare"
           style={{
-            display: hasShareScreen ? "flex" : "grid", // Jika ada share screen, gunakan flex untuk tile
-            flexDirection: hasShareScreen ? "column" : "unset",
-            gridTemplateColumns: !hasShareScreen ? `repeat(${numCols}, 1fr)` : "unset",
-            gap: "10px",
-            width: hasShareScreen ? "20%" : "100%", // Saat ada share screen, ubah tile jadi kolom kecil
+            width: hasShareScreen ? "80%" : "100%", // Fokus lebih besar pada screen share
             height: "100%",
-            overflowY: "auto", // Jika banyak participant, tile akan bisa di-scroll
           }}
         >
-          {participantIds.map((id) => (
-            <Tile key={id} sessionId={id} isVideoEnabled={isVideoEnabled} />
-          ))}
+          <DailyVideo sessionId={screen.session_id} type="screenVideo" />
         </div>
-      </>
-    );
+      ))}
+
+      <div
+        className="CallTiles"
+        style={{
+          display: hasShareScreen ? "flex" : "grid", // Jika ada share screen, gunakan flex untuk tile
+          flexDirection: hasShareScreen ? "column" : "unset",
+          gridTemplateColumns: !hasShareScreen
+            ? `repeat(${numCols}, 1fr)`
+            : "unset",
+          gap: "10px",
+          width: hasShareScreen ? "20%" : "100%", // Saat ada share screen, ubah tile jadi kolom kecil
+          height: "100%",
+          overflowY: "auto", // Jika banyak participant, tile akan bisa di-scroll
+        }}
+      >
+        {participantIds.map((id) => (
+          <Tile
+            key={id}
+            sessionId={id}
+            hasShareScreen={hasShareScreen}
+            isVideoEnabled={isVideoEnabled}
+          />
+        ))}
+      </div>
+    </>
+  );
 }
