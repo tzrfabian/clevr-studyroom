@@ -8,6 +8,7 @@ import Call from "../../../components/Call";
 import Controls from "@/components/Controls";
 import Chat from "@/components/Chat";
 import Loader from "@/components/Loader";
+import { toast } from "react-toastify";
 
 
 function CallWrapper({ onLeave }) {
@@ -27,7 +28,10 @@ function CallWrapper({ onLeave }) {
 
   useEffect(() => {
     if (daily) {
-      daily.join();
+      daily.join().catch((err) => {
+        toast.error(err.errorMsg)
+        // console.log(err, "ERROR JOINING ROOM");
+      })
     }
 
     return () => {
@@ -146,7 +150,8 @@ export default function Room() {
     return () => controller.abort();
   }, [createOrJoinRoom]);
 
-  const handleLeave = useCallback(() => {
+  const handleLeave = useCallback((ev) => {
+    // console.log(ev, " <<<< EVENT");
     router.push("/dashboard");
   }, [router]);
 
