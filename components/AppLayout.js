@@ -90,11 +90,6 @@ export default function AppLayout({ children }) {
       </header>
 
       <main className="flex-grow container mx-auto px-4 py-8">{children}</main>
-      <footer className="bg-neutral text-neutral-content">
-        <div className="container mx-auto px-4 py-2 text-center">
-          © 2024 Clevr. All rights reserved.
-        </div>
-      </footer>
     </div>
   );
 }
