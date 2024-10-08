@@ -10,6 +10,9 @@ export default function Controls({
   isScreenSharing,
   isScreenShareAllowed,
   onWhiteboardToggle,
+  isWhiteboardActive,
+  isWhiteboardAllowed,
+  isWhiteboardOwner,
   isHost
 }) {
   const [isAudioEnabled, setIsAudioEnabled] = React.useState(true);
@@ -65,12 +68,14 @@ export default function Controls({
       )}
 
       {/* Toggle Whiteboard */}
-      <button
-        onClick={onWhiteboardToggle}
-        className={`${buttonBaseClass} bg-purple-500 hover:bg-purple-600 focus:ring-purple-400`}
-      >
-        <FaChalkboard size={iconSize} color="white" />
-      </button>
+      {(isWhiteboardAllowed || isWhiteboardOwner) && (
+        <button
+          onClick={onWhiteboardToggle}
+          className={`${buttonBaseClass} ${isWhiteboardActive ? 'bg-green-500 hover:bg-green-600 focus:ring-green-400' : 'bg-purple-500 hover:bg-purple-600 focus:ring-purple-400'}`}
+        >
+          <FaChalkboard size={iconSize} color="white" />
+        </button>
+      )}
 
       {/* Host Controls */}
       {isHost && (

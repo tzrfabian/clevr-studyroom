@@ -3,18 +3,22 @@ import { useState, useCallback, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useAppContext } from "../../../lib/AppContext";
 import ProtectedRoute from "../../../components/ProtectedRoute";
-import { DailyProvider, useDaily, useDailyEvent, useScreenShare } from "@daily-co/daily-react";
+import { DailyProvider, useDaily, useDailyEvent, useScreenShare, useLocalParticipant } from "@daily-co/daily-react";
 import Call from "../../../components/Call";
 import Controls from "@/components/Controls";
 import Chat from "@/components/Chat";
+import Whiteboard from "@/components/Whiteboard";
 
 function CallWrapper({ onLeave }) {
   const daily = useDaily();
+  const localParticipant = useLocalParticipant();
   const [joined, setJoined] = useState(false);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [showChat, setShowChat] = useState(false);
   const { isSharingScreen, startScreenShare, stopScreenShare } = useScreenShare();
+  const [isWhiteboardActive, setIsWhiteboardActive] = useState(false);
+  const [whiteboardOwnerId, setWhiteboardOwnerId] = useState(null);
   const params = useParams();
   const roomId = params.id;
   // console.log(roomId, "INI ROOM ID");
@@ -54,19 +58,66 @@ function CallWrapper({ onLeave }) {
   }, [daily, isVideoEnabled]);
 
   const handleScreenShareToggle = useCallback(async () => {
-    if (isSharingScreen) {
-      await stopScreenShare();
+    if (isSharingScreen || isWhiteboardActive) {
+      // await stopScreenShare();
+      //setIsWhiteboardActive(false);
+     // setWhiteboardOwnerId(null);
+      // daily.sendAppMessage({ type: 'stop-whiteboard' }, '*');
     } else {
-      await startScreenShare();
     }
-  }, [isSharingScreen, startScreenShare, stopScreenShare]);
+
+    await startScreenShare();
+
+  }, [isSharingScreen, isWhiteboardActive, startScreenShare, stopScreenShare, daily]);
+  
+  const handleWhiteboardToggle = useCallback(async () => {
+  setIsWhiteboardActive(true);
+  
+
+  await startScreenShare({
+    displayMediaOptions: {
+      selfBrowserSurface : 'include'
+    }
+  });
+
+   return
+  if (!localParticipant) return;
+
+    if (isWhiteboardActive && whiteboardOwnerId === localParticipant.session_id) {
+      setIsWhiteboardActive(false);
+      setWhiteboardOwnerId(null);
+     // daily.sendAppMessage({ type: 'stop-whiteboard' }, '*');
+    } else if (!isWhiteboardActive && !isSharingScreen) {
+      setWhiteboardOwnerId(localParticipant.session_id);
+      // daily.sendAppMessage({ type: 'start-whiteboard', ownerId: localParticipant.session_id }, '*');
+    }
+  }, [isWhiteboardActive, isSharingScreen, daily, localParticipant, whiteboardOwnerId]);
+
+  /** 
+  useDailyEvent('app-message', (event) => {
+    if (event.data.type === 'start-whiteboard') {
+      setIsWhiteboardActive(true);
+      setWhiteboardOwnerId(event.data.ownerId);
+    } else if (event.data.type === 'stop-whiteboard') {
+      setIsWhiteboardActive(false);
+      setWhiteboardOwnerId(null);
+    }
+  });
+  */
 
   if (!joined) return <p>Joining the call...</p>;
 
   return (
     <div className="h-screen flex flex-col justify-between items-center">
       <div className="flex-grow w-full flex justify-center items-center">
-        <Call isVideoEnabled={isVideoEnabled} />
+        {isWhiteboardActive ? (
+          <Whiteboard 
+            isOwner={localParticipant && whiteboardOwnerId === localParticipant.session_id}
+            daily={daily}
+          />
+        ) : (
+          <Call isVideoEnabled={isVideoEnabled} />
+        )}
         {showChat && <Chat roomId={roomId} />}
       </div>
       <div className="p-4 w-full flex justify-center">
@@ -78,7 +129,10 @@ function CallWrapper({ onLeave }) {
           onScreenShare={handleScreenShareToggle}
           isScreenSharing={isSharingScreen}
           isScreenShareAllowed={true}
-          onWhiteboardToggle={() => console.log("Whiteboard toggled")}
+          onWhiteboardToggle={handleWhiteboardToggle}
+          isWhiteboardActive={isWhiteboardActive}
+          isWhiteboardAllowed={true}
+          isWhiteboardOwner={localParticipant && whiteboardOwnerId === localParticipant.session_id}
           isHost={true}
         />
       </div>
