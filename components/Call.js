@@ -57,14 +57,14 @@ function Tile({ sessionId, hasShareScreen }) {
 
 export default function Call({ isVideoEnabled }) {
   const participantIds = useParticipantIds();
-  const { screens } = useScreenShare();
+  const { screens, startScreenShare } = useScreenShare();
 
-  // const numParticipants = participantIds.length;
+  
   const hasShareScreen = screens.length > 0;
-  // Jumlah kolom/ukuran tile saat tidak ada share screen
+ 
   const numCols = hasShareScreen ? 1 : Math.min(2, participantIds.length);
 
-  // Jika ada share screen, ubah layout tile menjadi kotak kecil di sisi kanan
+
   return (
     <>
       {screens.map((screen) => (
@@ -72,7 +72,7 @@ export default function Call({ isVideoEnabled }) {
           key={screen.screenId}
           className="ScreenShare"
           style={{
-            width: hasShareScreen ? "80%" : "100%", // Fokus lebih besar pada screen share
+            width: hasShareScreen ? "80%" : "100%",
             height: "100%",
           }}
         >
@@ -83,15 +83,15 @@ export default function Call({ isVideoEnabled }) {
       <div
         className="CallTiles"
         style={{
-          display: hasShareScreen ? "flex" : "grid", // Jika ada share screen, gunakan flex untuk tile
+          display: hasShareScreen ? "flex" : "grid",
           flexDirection: hasShareScreen ? "column" : "unset",
           gridTemplateColumns: !hasShareScreen
             ? `repeat(${numCols}, 1fr)`
             : "unset",
           gap: "10px",
-          width: hasShareScreen ? "20%" : "100%", // Saat ada share screen, ubah tile jadi kolom kecil
+          width: hasShareScreen ? "20%" : "100%", 
           height: "100%",
-          overflowY: "auto", // Jika banyak participant, tile akan bisa di-scroll
+          overflowY: "auto", 
         }}
       >
         {participantIds.map((id) => (
