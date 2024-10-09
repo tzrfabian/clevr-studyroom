@@ -19,12 +19,12 @@ function Tile({ sessionId, hasShareScreen, isSingleParticipant }) {
 
   console.log(username, userVideo, "<<<<<<<<<<<<<<<<<<<<<");
   return (
-    <div className="Tile p-2">
+    <div className="">
       {userVideo !== "playable" ? (
         <div
           className={`flex flex-col items-center justify-center bg-black text-white w-full ${
             hasShareScreen ? "" : isSingleParticipant ? "h-full" : "h-80"
-          } p-2 rounded-lg`}
+          } rounded-lg`}
         >
           <img
             className="w-16 h-16 md:w-24 md:h-24 rounded-full object-cover shadow-lg"
@@ -40,7 +40,7 @@ function Tile({ sessionId, hasShareScreen, isSingleParticipant }) {
           key={sessionId}
           automirror
           className={classNames({
-            active: activeId === sessionId,
+            // active: activeId === sessionId,
             "h-80": !hasShareScreen && !isSingleParticipant,
             "h-full": isSingleParticipant,
           })}
