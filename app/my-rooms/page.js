@@ -5,6 +5,8 @@ import ProtectedRoute from '../../components/ProtectedRoute';
 import { database } from '../../lib/firebase';
 import { ref, query, orderByChild, equalTo, get, remove } from 'firebase/database';
 import { useAppContext } from '../../lib/AppContext';
+import Swal from 'sweetalert2';
+import { Bounce, toast } from 'react-toastify';
 
 export default function MyRooms() {
   const [rooms, setRooms] = useState([]);
@@ -39,17 +41,37 @@ export default function MyRooms() {
   }, [user]);
 
   const handleDeleteRoom = async (roomId) => {
-    if (window.confirm('Are you sure you want to delete this room?')) {
       try {
-        const roomRef = ref(database, `rooms/${roomId}`);
-        await remove(roomRef);
-        alert('Room deleted successfully');
-        fetchRooms();
+        const result = await Swal.fire({
+          title: 'Are you sure you want to delete this room?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText : 'Delete!',
+        });
+        if(result.isConfirmed) {
+          const roomRef = ref(database, `rooms/${roomId}`);
+          await remove(roomRef);
+          toast.success('Delete room success!', {
+            position: "top-right",
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+          });
+          fetchRooms();
+        }
       } catch (error) {
         console.error('Error deleting room:', error);
         alert('Failed to delete room. Please try again.');
       }
-    }
+    
   };
 
   return (
