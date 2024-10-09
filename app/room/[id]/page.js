@@ -12,7 +12,7 @@ import { Bounce, toast } from "react-toastify";
 import Whiteboard from "@/components/Whiteboard";
 
 
-function CallWrapper({ onLeave }) {
+function CallWrapper({ }) {
   const daily = useDaily();
   const localParticipant = useLocalParticipant();
   const [joined, setJoined] = useState(false);
@@ -25,33 +25,41 @@ function CallWrapper({ onLeave }) {
   const [whiteboardOwnerId, setWhiteboardOwnerId] = useState(null);
   const params = useParams();
   const roomId = params.id;
+  const router = useRouter();
   // console.log(roomId, "INI ROOM ID");
-
-  useDailyEvent("left-meeting", onLeave);
+  const handleLeave = useCallback(async () => {
+    if(daily) {
+      await daily.leave();
+    }
+    // console.log(ev, " <<<< EVENT");
+    router.push("/dashboard");
+  }, [router, daily]);
+  // useDailyEvent("left-meeting", handleLeave);
   useDailyEvent("joining-meeting", () => setJoined(true));
 
   useEffect(() => {
     if (daily) {
-      daily.join().catch((err) => {
+      daily.join().then(() => {
+        toast.success("You are Joined the Room!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      }).catch((err) => {
         toast.error(err.errorMsg)
         // console.log(err, "ERROR JOINING ROOM");
-      })
-      toast.success("You are Joined the Room!", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
       });
     }
 
-    return () => {
+    return async () => {
       if (daily) {
-        daily.leave();
+        await daily.leave();
       }
     };
   }, [daily]);
@@ -87,7 +95,7 @@ function CallWrapper({ onLeave }) {
 
   const handleScreenShareToggle = useCallback(async () => {
     if (hasShareScreen && !isSharingScreen) {
-      alert("Screen sharing is currently in use by another participant.");
+      toast.error("Screen sharing is currently in use by another participant.");
       return;
     }
 
@@ -97,15 +105,14 @@ function CallWrapper({ onLeave }) {
       await startScreenShare();
     }
 
-    if (isSharingScreen || isWhiteboardActive) {
-      // await stopScreenShare();
-      //setIsWhiteboardActive(false);
-     // setWhiteboardOwnerId(null);
-      // daily.sendAppMessage({ type: 'stop-whiteboard' }, '*');
-    } else {
-    }
-
-    await startScreenShare();
+    // if (isSharingScreen || isWhiteboardActive) {
+    //   // await stopScreenShare();
+    //   //setIsWhiteboardActive(false);
+    //  // setWhiteboardOwnerId(null);
+    //   // daily.sendAppMessage({ type: 'stop-whiteboard' }, '*');
+    // } else {
+    // }
+    // await startScreenShare();
   }, [isSharingScreen, isWhiteboardActive, startScreenShare, stopScreenShare, hasShareScreen, daily]);
 
   const handleWhiteboardToggle = useCallback(async () => {
@@ -148,7 +155,7 @@ function CallWrapper({ onLeave }) {
       </div>
       <div className="p-4 w-full flex justify-center">
         <Controls
-          onLeave={onLeave}
+          onLeave={handleLeave}
           onToggleAudio={handleToggleAudio}
           onToggleVideo={handleToggleVideo}
           onChatToggle={handleChatToggle}
@@ -208,10 +215,7 @@ export default function Room() {
     return () => controller.abort();
   }, [createOrJoinRoom]);
 
-  const handleLeave = useCallback(() => {
-    // console.log(ev, " <<<< EVENT");
-    router.push("/dashboard");
-  }, [router]);
+  
 
   if (loading) return <div><Loader/></div>;
   if (error) return <div className="text-red-500">Error: {error}</div>;
@@ -220,7 +224,7 @@ export default function Room() {
   return (
     <ProtectedRoute>
       <DailyProvider url={roomData.url} userName={user.displayName} userData={{photo_url: user.photoURL}}>
-        <CallWrapper onLeave={handleLeave} />
+        <CallWrapper  />
         <DailyAudio/>
       </DailyProvider>
     </ProtectedRoute>
