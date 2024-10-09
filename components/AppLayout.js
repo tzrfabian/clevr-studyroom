@@ -50,7 +50,7 @@ export default function AppLayout({ children }) {
             href="/"
             className="text-3xl font-extrabold tracking-wide hover:text-blue-200 transition duration-300 ease-in-out"
           >
-            <img src="https://cdn.discordapp.com/attachments/1289154509993414729/1293072043885199382/clevr_logo_1_3.png?ex=67060aaf&is=6704b92f&hm=35cef1432dcee21b203f8c6c243b86ac0e4acbe9cd98889358026909fb0065b1&" alt="logo img" width={150}/>
+            <img src="https://i.imgur.com/iMIZkSz.png" alt="logo img" width={150}/>
           </Link>
           <div className="flex items-center space-x-4">
             <ThemeToggle />
