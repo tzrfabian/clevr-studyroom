@@ -119,11 +119,13 @@ export default function CreateRoom() {
             <p>Room ID: <strong>{createdRoomId}</strong></p>
             <p>Share this ID with others to let them join your room.</p>
             <p className='mt-2'>Do you want to redirect to your room?</p>
-            <Link href={`/room/${createdRoomId}`}>
-            <button className="btn btn-success text-white w-full my-2">
+            {/* <Link href={`/room/${createdRoomId}`}> */}
+            <button className="btn btn-success text-white w-full my-2" 
+            onClick={() => router.push(`/room/${createdRoomId}`)}
+            >
               Go to Your Room
             </button>
-            </Link>
+            {/* </Link> */}
           </div>
         )}
       </div>

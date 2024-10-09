@@ -8,7 +8,7 @@ import Call from "../../../components/Call";
 import Controls from "@/components/Controls";
 import Chat from "@/components/Chat";
 import Loader from "@/components/Loader";
-import { toast } from "react-toastify";
+import { Bounce, toast } from "react-toastify";
 import Whiteboard from "@/components/Whiteboard";
 
 
@@ -36,6 +36,17 @@ function CallWrapper({ onLeave }) {
         toast.error(err.errorMsg)
         // console.log(err, "ERROR JOINING ROOM");
       })
+      toast.success("You are Joined the Room!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
     }
 
     return () => {
