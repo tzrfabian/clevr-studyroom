@@ -48,7 +48,7 @@ export default function CreateRoom() {
       setLoading(false);
       toast.success("Room Created!", {
         position: "top-right",
-        autoClose: 5000,
+        autoClose: 2000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -58,6 +58,7 @@ export default function CreateRoom() {
         transition: Bounce,
       });
       setCreatedRoomId(newRoomRef.key);
+      console.log(createdRoomId);
       // redirect 
       // router.push(`/room/${newRoomRef.key}`);
     } catch (error) {
@@ -117,6 +118,12 @@ export default function CreateRoom() {
             <p>Room created successfully!</p>
             <p>Room ID: <strong>{createdRoomId}</strong></p>
             <p>Share this ID with others to let them join your room.</p>
+            <p className='mt-2'>Do you want to redirect to your room?</p>
+            <Link href={`/room/${createdRoomId}`}>
+            <button className="btn btn-success text-white w-full my-2">
+              Go to Your Room
+            </button>
+            </Link>
           </div>
         )}
       </div>
