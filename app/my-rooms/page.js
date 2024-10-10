@@ -69,7 +69,7 @@ export default function MyRooms() {
         }
       } catch (error) {
         console.error('Error deleting room:', error);
-        alert('Failed to delete room. Please try again.');
+        toast.error('Failed to delete room. Please try again.');
       }
     
   };
